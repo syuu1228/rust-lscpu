@@ -29,18 +29,10 @@ impl CpuByteOrder {
     }
 
     fn parse_byteorder() -> Endian {
-        let cpu_byteorder_path = "/sys/kernel/cpu_byteorder";
-        match fs::read_to_string(cpu_byteorder_path) {
-            Ok(content) => {
-                if content.trim() == "little" {
-                    return Endian::LittleEndian;
-                } else {
-                    return Endian::BigEndian;
-                }
-            }
-            Err(e) => {
-                panic!("Unable to read {}: {}", cpu_byteorder_path, e);
-            }
+        let content = fs::read_to_string("/sys/kernel/cpu_byteorder").unwrap();
+        return match content.trim() {
+            "little" => Endian::LittleEndian,
+            _ => Endian::BigEndian,
         }
     }
 }

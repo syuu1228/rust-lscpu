@@ -94,25 +94,18 @@ impl CpuInfo {
     }
 
     fn parse_cpuinfo() -> Vec<HashMap<String, String>> {
-        let cpuinfo_path = "/proc/cpuinfo";
         let mut cpuinfo = Vec::new();
-        match fs::read_to_string(cpuinfo_path) {
-            Ok(content) => {
-                let mut cpu_params = HashMap::new();
-                for line in content.lines() {
-                    if line.len() == 0 {
-                        cpuinfo.push(cpu_params);
-                        cpu_params = HashMap::new();
-                    } else {
-                        let tokens: Vec<&str> = line.split(':').collect();
-                        let key = tokens[0].trim();
-                        let value = tokens[1].trim();
-                        cpu_params.insert(key.to_string(), value.to_string());
-                    }
-                }
-            }
-            Err(e) => {
-                panic!("Unable to read {}: {}", cpuinfo_path, e);
+        let content = fs::read_to_string("/proc/cpuinfo").unwrap();
+        let mut cpu_params = HashMap::new();
+        for line in content.lines() {
+            if line.len() == 0 {
+                cpuinfo.push(cpu_params);
+                cpu_params = HashMap::new();
+            } else {
+                let tokens: Vec<&str> = line.split(':').collect();
+                let key = tokens[0].trim();
+                let value = tokens[1].trim();
+                cpu_params.insert(key.to_string(), value.to_string());
             }
         }
         return cpuinfo;
