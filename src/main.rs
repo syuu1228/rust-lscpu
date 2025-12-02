@@ -37,9 +37,12 @@ fn print_summary() {
         virtualization_string = "VT-x";
     }
     println!("  Virtualization:\t\t{}", virtualization_string);
-    let hypervisor_vendor = hypervisor::Hypervisor::hypervisor_vendor();
-    if let Some(result) = hypervisor_vendor {
+    let hypervisor = hypervisor::Hypervisor::new();
+    if let Some(result) = hypervisor.hypervisor_vendor {
         println!("Hypervisor vendor:\t\t{}", result)
+    }
+    if let Some(result) = hypervisor.hypervisor_type {
+        println!("Virtualization type:\t\t{}", result)
     }
 }
 
