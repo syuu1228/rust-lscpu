@@ -23,8 +23,8 @@ pub struct CpuByteOrder {
 
 impl CpuByteOrder {
     pub fn new() -> Self {
-        return CpuByteOrder {
-            byteorder: CpuByteOrder::parse_byteorder(),
+        return Self {
+            byteorder: Self::parse_byteorder(),
         }
     }
 

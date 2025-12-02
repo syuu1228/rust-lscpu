@@ -64,7 +64,7 @@ impl Hypervisor {
 
     pub fn new() -> Self {
         let (hypervisor_vendor, hypervisor_type) = Self::detect_hypervisor();
-        return Hypervisor {
+        return Self {
             hypervisor_vendor: hypervisor_vendor,
             hypervisor_type: hypervisor_type,
         }

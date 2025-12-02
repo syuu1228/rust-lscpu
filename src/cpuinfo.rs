@@ -34,35 +34,35 @@ pub struct CpuInfo {
 
 impl CpuInfo {
     pub fn new() -> Self {
-        let cpuinfo = CpuInfo::parse_cpuinfo();
-        return CpuInfo {
+        let cpuinfo = Self::parse_cpuinfo();
+        return Self {
             processor: cpuinfo[0].get("processor").unwrap().to_string(),
             vendor_id: cpuinfo[0].get("vendor_id").unwrap().to_string(),
             cpu_family: cpuinfo[0].get("cpu family").unwrap().parse().unwrap(),
             model: cpuinfo[0].get("model").unwrap().parse().unwrap(),
             model_name: cpuinfo[0].get("model name").unwrap().to_string(),
             stepping: cpuinfo[0].get("stepping").unwrap().parse().unwrap(),
-            microcode: CpuInfo::cpuinfo_parse_hex(cpuinfo[0].get("microcode").unwrap()),
+            microcode: Self::cpuinfo_parse_hex(cpuinfo[0].get("microcode").unwrap()),
             mhz: cpuinfo[0].get("cpu MHz").unwrap().to_string(),
-            cache_size: CpuInfo::cpuinfo_parse_cache_size(cpuinfo[0].get("cache size").unwrap()),
+            cache_size: Self::cpuinfo_parse_cache_size(cpuinfo[0].get("cache size").unwrap()),
             physical_id: cpuinfo[0].get("physical id").unwrap().parse().unwrap(),
             siblings: cpuinfo[0].get("siblings").unwrap().parse().unwrap(),
             core_id: cpuinfo[0].get("core id").unwrap().parse().unwrap(),
             cpu_cores: cpuinfo[0].get("cpu cores").unwrap().parse().unwrap(),
             apicid: cpuinfo[0].get("apicid").unwrap().parse().unwrap(),
             initial_apicid: cpuinfo[0].get("initial apicid").unwrap().parse().unwrap(),
-            fpu: CpuInfo::cpuinfo_parse_bool(cpuinfo[0].get("fpu").unwrap()),
-            fpu_exception: CpuInfo::cpuinfo_parse_bool(cpuinfo[0].get("fpu_exception").unwrap()),
+            fpu: Self::cpuinfo_parse_bool(cpuinfo[0].get("fpu").unwrap()),
+            fpu_exception: Self::cpuinfo_parse_bool(cpuinfo[0].get("fpu_exception").unwrap()),
             cpuid_level: cpuinfo[0].get("cpuid level").unwrap().parse().unwrap(),
-            wp: CpuInfo::cpuinfo_parse_bool(cpuinfo[0].get("wp").unwrap()),
-            flags: CpuInfo::cpuinfo_parse_list(cpuinfo[0].get("flags").unwrap()),
-            bugs: CpuInfo::cpuinfo_parse_list(cpuinfo[0].get("bugs").unwrap()),
+            wp: Self::cpuinfo_parse_bool(cpuinfo[0].get("wp").unwrap()),
+            flags: Self::cpuinfo_parse_list(cpuinfo[0].get("flags").unwrap()),
+            bugs: Self::cpuinfo_parse_list(cpuinfo[0].get("bugs").unwrap()),
             bogomips: cpuinfo[0].get("bogomips").unwrap().to_string(),
-            tlb_size: CpuInfo::cpuinfo_parse_tlb_size(cpuinfo[0].get("TLB size").unwrap()),
+            tlb_size: Self::cpuinfo_parse_tlb_size(cpuinfo[0].get("TLB size").unwrap()),
             clflush_size: cpuinfo[0].get("clflush size").unwrap().parse().unwrap(),
             cache_alignment: cpuinfo[0].get("cache_alignment").unwrap().parse().unwrap(),
             address_sizes: cpuinfo[0].get("address sizes").unwrap().to_string(),
-            power_management: CpuInfo::cpuinfo_parse_list(cpuinfo[0].get("power management").unwrap()),
+            power_management: Self::cpuinfo_parse_list(cpuinfo[0].get("power management").unwrap()),
             ncpus: cpuinfo.len(),
         }
     }

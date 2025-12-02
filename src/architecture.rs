@@ -8,8 +8,8 @@ pub struct Architecture {
 
 impl Architecture {
     pub fn new() -> Self {
-        let (arch, bit32, bit64) = Architecture::parse_architecture();
-        return Architecture {
+        let (arch, bit32, bit64) = Self::parse_architecture();
+        return Self {
             arch: arch,
             bit32: bit32,
             bit64: bit64,
