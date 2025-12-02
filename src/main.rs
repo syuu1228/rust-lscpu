@@ -36,7 +36,7 @@ fn print_summary() {
     if cpuinfo.flags.iter().any(|f| f == "vmx") {
         virtualization_string = "VT-x";
     }
-    println!("  Virtualization: {}", virtualization_string);
+    println!("  Virtualization:\t\t{}", virtualization_string);
     let hypervisor_vendor = hypervisor::Hypervisor::hypervisor_vendor();
     if let Some(result) = hypervisor_vendor {
         println!("Hypervisor vendor:\t\t{}", result)
