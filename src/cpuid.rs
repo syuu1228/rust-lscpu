@@ -1,35 +1,20 @@
 use std::arch::asm;
-use std::fmt;
-
-#[derive(Clone,Copy)]
-pub enum HypervisorVendor {
-    KVM,
-    HyperV,
-    VMware,
-    Xen,
-    Parallels,
-    VirtualBox,
-    Unknown,
-}
-
-impl fmt::Display for HypervisorVendor {
-    fn fmt(&self, f:&mut fmt::Formatter) -> fmt::Result {
-        match self {
-            HypervisorVendor::KVM => write!(f, "KVM"),
-            HypervisorVendor::HyperV => write!(f, "Hyper-V"),
-            HypervisorVendor::VMware => write!(f, "VMware"),
-            HypervisorVendor::Xen => write!(f, "Xen"),
-            HypervisorVendor::Parallels => write!(f, "Parallels"),
-            HypervisorVendor::VirtualBox => write!(f, "VirtualBox"),
-            HypervisorVendor::Unknown => write!(f, "Unknown"),
-        }
-    }
-}
 
 pub struct Cpuid {
 }
 
 impl Cpuid {
+    const CPUID_FEAT_ECX_HYPERVISOR:u32 = 1 << 31;
+    const HYPERVISOR_INFO_LEAF:u32 = 0x40000000;
+
+    fn register_to_str(reg: u32) -> String {
+        let c0:char = (reg as u8) as char;
+        let c1:char = ((reg >> 8) as u8) as char;
+        let c2:char = ((reg >> 16) as u8) as char;
+        let c3:char = ((reg >> 24) as u8) as char;
+        return format!("{c0}{c1}{c2}{c3}");
+    }
+
     pub fn hypervisor_bit() -> bool {
         let eax: u32 = 0x01;
         let ecx: u32;
@@ -40,27 +25,15 @@ impl Cpuid {
                 out("ecx") ecx
             }
         }
-        if ecx & (1 << 31) == (1 << 31) {
+        if ecx & Cpuid::CPUID_FEAT_ECX_HYPERVISOR == Cpuid::CPUID_FEAT_ECX_HYPERVISOR {
             return true;
         } else {
             return false;
         }
     }
 
-
-    pub fn hypervisor_vendor() -> Option<HypervisorVendor> {
-        fn register_to_str(reg: u32) -> String {
-            let c0:char = (reg as u8) as char;
-            let c1:char = ((reg >> 8) as u8) as char;
-            let c2:char = ((reg >> 16) as u8) as char;
-            let c3:char = ((reg >> 24) as u8) as char;
-            return format!("{c0}{c1}{c2}{c3}");
-        }
-    
-        if !Cpuid::hypervisor_bit() {
-            return None;
-        }
-        let eax:u32 = 0x40000000;
+    pub fn hypervisor_vendor() -> String {
+        let eax:u32 = Cpuid::HYPERVISOR_INFO_LEAF;
         let ebx:u32;
         let ecx:u32;
         let edx:u32;
@@ -74,19 +47,9 @@ impl Cpuid {
                 out("edx") edx
             }
         }
-        let str_ebx = register_to_str(ebx);
-        let str_ecx = register_to_str(ecx);
-        let str_edx = register_to_str(edx);
-        let vendor_str = format!("{str_ebx}{str_ecx}{str_edx}");
-        let vendor = match *&(vendor_str.trim()) {
-            "KVMKVMKVM" => HypervisorVendor::KVM,
-            "Microsoft Hv" => HypervisorVendor::HyperV,
-            "VMwareVMware" => HypervisorVendor::VMware,
-            "XenVMMXenVMM" => HypervisorVendor::Xen,
-            "prl hyperv" => HypervisorVendor::Parallels,
-            "VboxVboxVbox" => HypervisorVendor::VirtualBox,
-            _ => HypervisorVendor::Unknown,
-        };
-        return Some(vendor);
+        let str_ebx = Cpuid::register_to_str(ebx);
+        let str_ecx = Cpuid::register_to_str(ecx);
+        let str_edx = Cpuid::register_to_str(edx);
+        return format!("{str_ebx}{str_ecx}{str_edx}");
     }
 }
