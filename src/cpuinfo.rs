@@ -4,29 +4,29 @@ use std::collections::HashMap;
 pub struct CpuInfo {
     pub processor: String,
     pub vendor_id: String,
-    pub cpu_family: i32,
-    pub model: u32,
+    pub cpu_family: String,
+    pub model: String,
     pub model_name: String,
-    pub stepping: i32,
-    pub microcode: u32,
+    pub stepping: String,
+    pub microcode: String,
     pub mhz: String,
-    pub cache_size: u32,
-    pub physical_id: i32,
-    pub siblings: i32,
-    pub core_id: i32,
-    pub cpu_cores: i32,
-    pub apicid: i32,
-    pub initial_apicid: i32,
-    pub fpu: bool,
-    pub fpu_exception: bool,
-    pub cpuid_level: i32,
-    pub wp: bool,
+    pub cache_size: String,
+    pub physical_id: String,
+    pub siblings: String,
+    pub core_id: String,
+    pub cpu_cores: String,
+    pub apicid: String,
+    pub initial_apicid: String,
+    pub fpu: String,
+    pub fpu_exception: String,
+    pub cpuid_level: String,
+    pub wp: String,
     pub flags: Vec<String>,
     pub bugs: Vec<String>,
     pub bogomips: String,
-    pub tlb_size: i32,
-    pub clflush_size: u32,
-    pub cache_alignment: i32,
+    pub tlb_size: String,
+    pub clflush_size: String,
+    pub cache_alignment: String,
     pub address_sizes: String,
     pub power_management: Vec<String>,
     pub ncpus: usize,
@@ -36,61 +36,61 @@ impl CpuInfo {
     pub fn new() -> Self {
         let cpuinfo = Self::parse_cpuinfo();
         return Self {
-            processor: cpuinfo[0].get("processor").unwrap().to_string(),
-            vendor_id: cpuinfo[0].get("vendor_id").unwrap().to_string(),
-            cpu_family: cpuinfo[0].get("cpu family").unwrap().parse().unwrap(),
-            model: cpuinfo[0].get("model").unwrap().parse().unwrap(),
-            model_name: cpuinfo[0].get("model name").unwrap().to_string(),
-            stepping: cpuinfo[0].get("stepping").unwrap().parse().unwrap(),
-            microcode: Self::cpuinfo_parse_hex(cpuinfo[0].get("microcode").unwrap()),
-            mhz: cpuinfo[0].get("cpu MHz").unwrap().to_string(),
-            cache_size: Self::cpuinfo_parse_cache_size(cpuinfo[0].get("cache size").unwrap()),
-            physical_id: cpuinfo[0].get("physical id").unwrap().parse().unwrap(),
-            siblings: cpuinfo[0].get("siblings").unwrap().parse().unwrap(),
-            core_id: cpuinfo[0].get("core id").unwrap().parse().unwrap(),
-            cpu_cores: cpuinfo[0].get("cpu cores").unwrap().parse().unwrap(),
-            apicid: cpuinfo[0].get("apicid").unwrap().parse().unwrap(),
-            initial_apicid: cpuinfo[0].get("initial apicid").unwrap().parse().unwrap(),
-            fpu: Self::cpuinfo_parse_bool(cpuinfo[0].get("fpu").unwrap()),
-            fpu_exception: Self::cpuinfo_parse_bool(cpuinfo[0].get("fpu_exception").unwrap()),
-            cpuid_level: cpuinfo[0].get("cpuid level").unwrap().parse().unwrap(),
-            wp: Self::cpuinfo_parse_bool(cpuinfo[0].get("wp").unwrap()),
-            flags: Self::cpuinfo_parse_list(cpuinfo[0].get("flags").unwrap()),
-            bugs: Self::cpuinfo_parse_list(cpuinfo[0].get("bugs").unwrap()),
-            bogomips: cpuinfo[0].get("bogomips").unwrap().to_string(),
-            tlb_size: Self::cpuinfo_parse_tlb_size(cpuinfo[0].get("TLB size").unwrap()),
-            clflush_size: cpuinfo[0].get("clflush size").unwrap().parse().unwrap(),
-            cache_alignment: cpuinfo[0].get("cache_alignment").unwrap().parse().unwrap(),
-            address_sizes: cpuinfo[0].get("address sizes").unwrap().to_string(),
-            power_management: Self::cpuinfo_parse_list(cpuinfo[0].get("power management").unwrap()),
+            processor: Self::get(&cpuinfo, "processor"),
+            vendor_id: Self::get(&cpuinfo, "vendor_id"),
+            cpu_family: Self::get(&cpuinfo, "cpu family"),
+            model: Self::get(&cpuinfo, "model"),
+            model_name: Self::get(&cpuinfo, "model name"),
+            stepping: Self::get(&cpuinfo, "stepping"),
+            microcode: Self::get(&cpuinfo, "microcode"),
+            mhz: Self::get(&cpuinfo, "cpu MHz"),
+            cache_size: Self::parse_cache_size(Self::get(&cpuinfo, "cache size")),
+            physical_id: Self::get(&cpuinfo, "physical id"),
+            siblings: Self::get(&cpuinfo, "siblings"),
+            core_id: Self::get(&cpuinfo, "core id"),
+            cpu_cores: Self::get(&cpuinfo, "cpu cores"),
+            apicid: Self::get(&cpuinfo, "apicid"),
+            initial_apicid: Self::get(&cpuinfo, "initial apicid"),
+            fpu: Self::get(&cpuinfo, "fpu"),
+            fpu_exception: Self::get(&cpuinfo, "fpu_exception"),
+            cpuid_level: Self::get(&cpuinfo, "cpuid level"),
+            wp: Self::get(&cpuinfo, "wp"),
+            flags: Self::parse_list(Self::get(&cpuinfo, "flags")),
+            bugs: Self::parse_list(Self::get(&cpuinfo, "bugs")),
+            bogomips: Self::get(&cpuinfo, "bogomips"),
+            tlb_size: Self::parse_tlb_size(Self::get(&cpuinfo, "TLB size")),
+            clflush_size: Self::get(&cpuinfo, "clflush size"),
+            cache_alignment: Self::get(&cpuinfo, "cache_alignment"),
+            address_sizes: Self::get(&cpuinfo, "address sizes"),
+            power_management: Self::parse_list(Self::get(&cpuinfo, "power management")),
             ncpus: cpuinfo.len(),
         }
     }
 
-    fn cpuinfo_parse_cache_size(value: &str) -> u32 {
+    fn get(cpuinfo: &Vec<HashMap<String, String>>, key: &str) -> String {
+        cpuinfo[0].get(key).map_or("", String::as_str).to_string()
+    }
+
+    fn parse_cache_size(value: String) -> String {
         let tokens = value.split_whitespace().collect::<Vec<&str>>();
-        tokens[0].parse().unwrap()
-    }
-
-    fn cpuinfo_parse_tlb_size(value: &str) -> i32 {
-        let tokens = value.split_whitespace().collect::<Vec<&str>>();
-        tokens[0].parse().unwrap()
-    }
-
-    fn cpuinfo_parse_list(value: &str) -> Vec<String> {
-        value.split_whitespace().map(|s| s.to_string()).collect::<Vec<String>>()
-    }
-
-    fn cpuinfo_parse_bool(value: &str) -> bool {
-        if value == "yes" {
-            true
+        if tokens.len() > 0 {
+            tokens[0].to_string()
         } else {
-            false
+            "".to_string()
         }
     }
 
-    fn cpuinfo_parse_hex(value: &str) -> u32 {
-        u32::from_str_radix(value.strip_prefix("0x").unwrap(), 16).unwrap()
+    fn parse_tlb_size(value: String) -> String {
+        let tokens = value.split_whitespace().collect::<Vec<&str>>();
+        if tokens.len() > 0 {
+            tokens[0].to_string()
+        } else {
+            "".to_string()
+        }
+    }
+
+    fn parse_list(value: String) -> Vec<String> {
+        value.split_whitespace().map(|s| s.to_string()).collect::<Vec<String>>()
     }
 
     fn parse_cpuinfo() -> Vec<HashMap<String, String>> {
