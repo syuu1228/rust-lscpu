@@ -9,7 +9,7 @@ pub struct Architecture {
 impl Architecture {
     pub fn new() -> Self {
         let (arch, bit32, bit64) = Self::parse_architecture();
-        return Self {
+        Self {
             arch: arch,
             bit32: bit32,
             bit64: bit64,
@@ -31,6 +31,6 @@ impl Architecture {
             }
             &_ => todo!()
         }
-        return (arch, bit32, bit64);
+        (arch, bit32, bit64)
     }
 }

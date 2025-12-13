@@ -69,28 +69,28 @@ impl CpuInfo {
 
     fn cpuinfo_parse_cache_size(value: &str) -> u32 {
         let tokens = value.split_whitespace().collect::<Vec<&str>>();
-        return tokens[0].parse().unwrap();
+        tokens[0].parse().unwrap()
     }
 
     fn cpuinfo_parse_tlb_size(value: &str) -> i32 {
         let tokens = value.split_whitespace().collect::<Vec<&str>>();
-        return tokens[0].parse().unwrap();
+        tokens[0].parse().unwrap()
     }
 
     fn cpuinfo_parse_list(value: &str) -> Vec<String> {
-        return value.split_whitespace().map(|s| s.to_string()).collect::<Vec<String>>();
+        value.split_whitespace().map(|s| s.to_string()).collect::<Vec<String>>()
     }
 
     fn cpuinfo_parse_bool(value: &str) -> bool {
         if value == "yes" {
-            return true;
+            true
         } else {
-            return false;
+            false
         }
     }
 
     fn cpuinfo_parse_hex(value: &str) -> u32 {
-        return u32::from_str_radix(value.strip_prefix("0x").unwrap(), 16).unwrap();
+        u32::from_str_radix(value.strip_prefix("0x").unwrap(), 16).unwrap()
     }
 
     fn parse_cpuinfo() -> Vec<HashMap<String, String>> {
@@ -108,6 +108,6 @@ impl CpuInfo {
                 cpu_params.insert(key.to_string(), value.to_string());
             }
         }
-        return cpuinfo;
+        cpuinfo
     }
 }

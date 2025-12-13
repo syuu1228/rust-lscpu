@@ -9,7 +9,7 @@ fn print_summary() {
     let byteorder = cpubyteorder::CpuByteOrder::new();
     let architecture = architecture::Architecture::new();
     println!("Architecture:\t\t\t{}", architecture.arch);
-    let mut op_mode_string: &str;
+    let op_mode_string: &str;
     if architecture.bit32 && architecture.bit64 {
         op_mode_string = "32bit, 64bit";
     } else if architecture.bit32 {

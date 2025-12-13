@@ -69,7 +69,7 @@ impl Hypervisor {
 
     pub fn new() -> Self {
         let (hypervisor_vendor, hypervisor_type) = Self::detect_hypervisor();
-        return Self {
+        Self {
             hypervisor_vendor: hypervisor_vendor,
             hypervisor_type: hypervisor_type,
         }
@@ -109,7 +109,7 @@ impl Hypervisor {
                     hypervisor_type = HypervisorType::Para;
                 }
             }
-            return (Some(vendor), Some(hypervisor_type));
+            (Some(vendor), Some(hypervisor_type))
         } else if Path::new("/proc/xen/").exists() {
             let xen_capabilities = fs::read_to_string("/proc/xen/capabilities").unwrap();
             let hypervisor_type = match xen_capabilities.as_str() {
@@ -117,9 +117,9 @@ impl Hypervisor {
                 _ => HypervisorType::Para,
             };
             let vendor = HypervisorVendor::Xen;
-            return (Some(vendor), Some(hypervisor_type));
+            (Some(vendor), Some(hypervisor_type))
         } else {
-            return (None, None);
+            (None, None)
         }
     }
 }
